@@ -1,95 +1,41 @@
-# RISC-V with Virtual Memory Access
+# AdamRiscV
 
-本项目基于开源项目 **AdamRiscV** 进行开发，在RV32-I基础指令集的RICS-V处理器基础上进行改进以支持：
+# 简介
 
-* M/S/U特权级转换
-* 支持页表转换
-* 支持系统寄存器访问
-
-具体要求为：
-
-* 额外的指令支持：csrw/csrr/mret/sret/ret
-* 实现系统寄存器：mtvec/mtatus/mepc/mtval/satpsepc
-* 页表转换：只支持数据访问的虚实转换，指令存储器访问仍然是实地址访问。
-
-**AdamRiscV** 项目已经实现了兼容RV32I的标准五阶流水线CPU，主要参照《计算机组成与设计 硬件/软件接口 RISCV版》中的教程所设计。项目网址：
+兼容RV32I的标准五阶流水线CPU，主要参照《计算机组成与设计 硬件/软件接口 RISCV版》中的教程所设计。项目网址：
 [AdamRiscV-Gitee](https://gitee.com/adam-wu1999/AdamRiscv);
 [AdamRiscV-Github](https://github.com/AdamWu1999/AdamRiscv)
 
-# 具体实现
+---
 
-## CSRs (Control and Status Registers) 
 
-CSRs 一般都是在EX阶段访问
+# Version 1.2 更新日志
 
-1. **`mtvec` (Machine Trap Vector Register):**
-   - `mtvec` 确定机器模式陷阱向量的基址。此寄存器用于设置当发生陷阱或中断时控制转移到的地址。
-   - `mtvec` 的地址为 0x305
+## 主要改进
 
-2. **`mstatus` (Machine Status Register):**
-   - `mstatus` 用于保存机器模式的各种状态和控制信息。
-   - 地址为 0x300
-   - 需要注意各个字段的意义：![mstatus](./pic/mstatus.png)
-   - `MPP` (Machine Previous Privilege): Specifies the privilege mode to enter upon an exception return.
-   - `MPIE` (Machine Previous Interrupt Enable): Indicates whether interrupts were enabled before an exception occurred.
-   - `MPIE` (Machine Previous Interrupt Enable): Indicates whether interrupts were enabled before an exception occurred.
+1. IROM、DATA_RAM从原先的异步读Memory更换为同步读Memory，提供三种Memory可选：MC_MACRO（memory compiler库，但功能仿真下暂不可用）* 、REG_ARRAY（手写单端SRAM）* 、BRAM IP。支持在FPGA中综合为BRAM而不会被综合成LUTRAM，大幅度改善资源与性能。此外，为了抵消换用同步读RAM所造成的读取延迟，修改了流水站中涉及Memory读取的部分设计。（*：来自芯王国CK_Riscv）
+2. 将原先设计中对Store指令的前递整合至EX阶段Rs2的前递中，增加针对Load(Rd)=Store(Rs2)的前递（即memory内数据复制的操作）。这么做是因为之前对书中的这段话理解有误。
+    ![LoadStoreForward](./pic/LoadStoreForward.png)
+3. 将寄存器的同步复位替换为异步复位，并增加异步复位同步释放模块。
+4. 增加了两个基于VCS+Verdi的自动化testbench。一个是修改自芯王国CK_Riscv的tb，可实现针对不同指令类型的测试；另一个是由v1.0版本中的tb进一步完善而来，实现对37条指令与程序相关性的综合测试，且新的tb可由Golden文本自动生成结果检测task。
+5. 增加了FPGA模式，该模式下使用BRAM IP实现memory并增加连接板卡的LED接口。在黑金AX7350板卡上实测通过，主频最高达110Mhz。
+6. 修正了硬件设计中区分分支跳转指令的错误，修正了Golden、rom程序中的错误，修复了仿真打印trace中部分信息位置出错的bug
 
-3. **`mepc` (Machine Exception Program Counter):**
-   - `mepc` 存储发生陷阱或中断时的程序计数器值。当发生陷阱时，当前程序计数器的值保存在 `mepc`.
-   - 地址为 0x341
+## Version 1.2.2
+1. 修正了前递中的bug（位于stage_ex的分支地址计算）. 在 test2.s 中增加了对 jarl 指令的前递测试程序
+2. comp_test 模式中增加了覆盖率检查的命令，在编译与执行完成之后可以 make COV 来使用verdi查看覆盖率
 
-4. **`mtval` (Machine Trap Value):**
-   - `mtval` 保存有关某些异常的附加信息。例如，对于指令页错误异常，`mtval` 包含发生故障的虚拟地址。
-   - 实现 `mtval` 涉及在发生某些异常时适当地更新它。需要为每种类型的异常确定要存储在 `mtval` 中的相关信息。
-   - 地址为 0x343
+## 未来开发前(wā)瞻(kēng)
 
-5. **`satp` (Supervisor Address Translation and Protection):**
-   - `satp` 对于在 S 模式下管理虚拟内存至关重要。它保存根物理页表地址。
-   - 要将 `satp` 集成到MMU(内存管理单元)逻辑中。当进入 S 模式或在 S 模式下处理页面错误时，相应地更新 `satp` 。
-   - 地址为 0x180
+1. 增加总线与UART等外设模块
+2. 增加一些调试特性（maybe JTAG？）
+3. 增加支持的指令
+4. 完善指令兼容性测试与覆盖率检测
+5. 完成DC综合
 
-6. **`sepc` (Supervisor Exception Program Counter):**
-   - 与 `mepc` 类似，`sepc`存储异常时的程序计数器值，但处于 S 模式。
-   - 地址为 0x141
+---
 
-## 额外指令支持
-
-1. **`csrr` & `csrw`**
-   - `csrr` 读特定的CSR，是伪指令，实际上是通过 `csrrs` 来实现的。
-   - `csrw` 对指定CSR的写入。作为一条伪指令，其实际上是通过 `csrrw` 来实现的。
-   - 编码如下：其中csr是高12位，集合了funct7和rs2。![csrr](./pic/csrr.png)
-
-   ```assembly
-   csrr rd,csr # pseudo
-   csrrs rd, csr, x0
-
-   csrw csr, rs1 # pseudo
-   csrrw x0, csr, rs1
-   ```
-
-2. **`mret` (Machine-mode Return):**
-   - 从 M 态的返回指令。
-   - 按照 `mstatus` 的 `MPP` 返回到上一次特权级。
-   - 从 `mepc` 中恢复PC。
-   - 指令编码为 0x30200073
-
-3. **`sret` (Supervisor-mode Return):**
-   - 从 S 态的返回指令。
-   - 按照 `sstatus` 的 `SPP` 返回到上一次特权级。
-   - 从 `sepc` 中恢复PC。
-   - 指令编码为 0x10200073，两者编码如下所示 ![mret](./pic/mret.png)
-
-4. **`ret` (Return):**
-   - 普通返回，伪指令，使用 `auipc` 和 `jalr` 实现
-
-## MMU 设计
-
-首先说明：我们只实现了data memory 的虚拟地址转换，所以 MMU 直接接在 `访存` 阶段，不使用 TLBs，使用两级页表转换，页大小为 4KB。
-
-具体的实现方式参照下图：
-![mmu](pic/MMU.png)
-
-# 源项目使用手册
+# 使用手册
 
 ## 1 工程目录结构总览
 
