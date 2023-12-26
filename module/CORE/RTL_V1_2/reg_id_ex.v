@@ -26,6 +26,15 @@ module reg_id_ex(
     output reg[4:0] ex_rs1,
     output reg[4:0] ex_rs2,
 
+    // yjk add
+    input  wire[1:0]   id_csr_op,
+    input  wire[1:0]   id_priv_ret,
+    input  wire[11:0]  id_csr,
+    output  wire[1:0]  ex_csr_op,
+    output  wire[1:0]  ex_priv_ret,
+    output  wire[11:0] ex_csr,
+    // yjk add end
+
     output reg[31:0]  ex_pc,
     output reg[31:0]  ex_regs_data1,
     output reg[31:0]  ex_regs_data2,
@@ -64,6 +73,12 @@ always @(posedge clk or negedge rstn) begin
 
         ex_rs1          <= 0;
         ex_rs2          <= 0;
+
+        // yjk add
+        ex_csr_op       <= 0;
+        ex_priv_ret     <= 0;
+        ex_csr          <= 0;
+        // yjk add end
     end 
     else begin
         ex_pc           <= id_pc;
@@ -85,6 +100,12 @@ always @(posedge clk or negedge rstn) begin
 
         ex_rs1          <= id_rs1;
         ex_rs2          <= id_rs2;
+        
+        // yjk add
+        ex_csr_op       <= id_csr_op;
+        ex_priv_ret     <= id_priv_ret;
+        ex_csr          <= id_csr;
+        // yjk add end
     end
     $display("ex_regs_data1: %h",ex_regs_data1 );
     $display("ex_regs_data2: %h",ex_regs_data2 );

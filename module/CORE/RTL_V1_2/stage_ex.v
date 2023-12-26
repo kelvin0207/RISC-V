@@ -18,6 +18,12 @@ module stage_ex(
     input  wire[31:0]  me_alu_o,
     input  wire[31:0]  w_regs_data,
 
+    // yjk add
+    input  wire[1:0]   ex_csr_op, // default=00, csrrw=01, csrrs=10
+    input  wire[1:0]   ex_priv_ret, // default-00, mret=01, sret=10
+    input  wire[11:0]  ex_csr,
+    // yjk add end
+
     output wire[31:0]  ex_alu_o,
     output wire[31:0]  ex_regs_data2_o,//the data for S-inst 
     output wire[31:0]  br_pc, //branch address

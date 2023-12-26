@@ -24,8 +24,12 @@ module stage_id(
     //forwarding
     output  wire       id_mem_write_forward, //to hazard detection, create a stall-exception for Load+Store forwarding 
     output  wire[4:0]  id_rs1,
-    output  wire[4:0]  id_rs2
-
+    output  wire[4:0]  id_rs2,
+    // yjk add
+    output  wire[1:0]   id_csr_op, // default=00, csrrw=01, csrrs=10
+    output  wire[1:0]   id_priv_ret, // default-00, mret=01, sret=10
+    output  wire[11:0]  id_csr
+    // yjk add end
 );
 
 wire        br          ;
@@ -87,8 +91,25 @@ assign id_mem_write    = (ctrl_valve == 1) ? 0 : mem_write      ;
 assign id_alu_src1     = (ctrl_valve == 1) ? 0 : alu_src1       ;
 assign id_alu_src2     = (ctrl_valve == 1) ? 0 : alu_src2       ; 
 assign id_br_addr_mode = (ctrl_valve == 1) ? 0 : br_addr_mode   ;       
-assign id_regs_write   = (ctrl_valve == 1) ? 0 : regs_write     ;             
+assign id_regs_write   = (ctrl_valve == 1) ? 0 : regs_write     ;
 
+// yjk add
+always @(*) begin
+    if(id_inst[6:0]==`System){
+        if(id_inst[14:12]==3'b001)
+            id_csr_op = 2'b01;
+        else if (id_inst[14:12]==3'b010)
+            id_csr_op = 2'b10;
+        else 
+            id_csr_op = 0;
+    }
+    else id_csr_op = 0;
+end
 
+assign id_csr = id_inst[31:20];
+
+assign id_priv_ret = (id_inst==32'h3020_0073)? 2'b01 :
+                    (id_inst==32'h1020_0073)? 2'b10 : 2'b00;
+// yjk add end
 
 endmodule

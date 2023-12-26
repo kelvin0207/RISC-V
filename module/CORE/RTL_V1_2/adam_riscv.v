@@ -44,6 +44,17 @@ wire          id_regs_write;
 wire          id_mem_write_forward;
 wire[4:0]     id_rs1;
 wire[4:0]     id_rs2;
+
+//yjk add 
+wire[1:0]     id_csr_op;
+wire[1:0]     id_priv_ret;
+wire[11:0]    id_csr;
+
+wire[1:0]     ex_csr_op;
+wire[1:0]     ex_priv_ret;
+wire[11:0]    ex_csr;
+// yjk add end
+
 wire[4:0]     ex_rs1;
 wire[4:0]     ex_rs2;
 wire[31:0]    ex_pc;
@@ -151,7 +162,12 @@ stage_id u_stage_id(
     .id_regs_write        (id_regs_write       ),
     .id_mem_write_forward (id_mem_write_forward),
     .id_rs1               (id_rs1              ),
-    .id_rs2               (id_rs2              )
+    .id_rs2               (id_rs2              ),
+    // yjk add 
+    .id_csr_op            (id_csr_op           ),
+    .id_priv_ret          (id_priv_ret         ),
+    .id_csr               (id_csr              )
+    // yjk add end
 );
 
 
@@ -177,6 +193,15 @@ reg_id_ex u_reg_id_ex(
     .id_ex_flush     (flush           ),
     .id_rs1          (id_rs1          ),
     .id_rs2          (id_rs2          ),
+    // yjk add 
+    .id_csr_op       (id_csr_op       ),
+    .id_priv_ret     (id_priv_ret     ),
+    .id_csr          (id_csr          ),
+
+    .ex_csr_op       (ex_csr_op       ),
+    .ex_priv_ret     (ex_priv_ret     ),
+    .ex_csr          (ex_csr          ),
+    // yjk add end
     .ex_rs1          (ex_rs1          ),
     .ex_rs2          (ex_rs2          ),
     .ex_pc           (ex_pc           ),
@@ -200,6 +225,11 @@ reg_id_ex u_reg_id_ex(
 
 
 stage_ex u_stage_ex(
+    // yjk add
+    .ex_csr_op       (ex_csr_op       ),
+    .ex_priv_ret     (ex_priv_ret     ),
+    .ex_csr          (ex_csr          ),
+    // yjk add end
     .ex_pc           (ex_pc           ),
     .ex_regs_data1   (ex_regs_data1   ),
     .ex_regs_data2   (ex_regs_data2   ),
