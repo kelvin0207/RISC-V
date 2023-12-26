@@ -5,6 +5,10 @@ module stage_if(
     input  wire          if_flush,
     input  wire[31:0]    br_addr,
     input  wire          br_ctrl,
+    // yjk add
+    input  wire          ret_ctrl,
+    input  wire[31:0]    ret_pc,
+    // yjk add end
     output wire[31:0]    if_inst,
     output wire[31:0]    if_pc
 );
@@ -14,6 +18,10 @@ pc u_pc(
     .clk      (clk      ),
     .br_ctrl  (br_ctrl  ),
     .br_addr  (br_addr  ),
+    // yjk add
+    .ret_ctrl (ret_ctrl ),
+    .ret_pc   (ret_pc   ),
+    // yjk add end
     .rstn     (rstn     ),
     .pc_o     (if_pc    ),
     .pc_stall (pc_stall )

@@ -86,3 +86,12 @@
 `define SB  2'b00
 `define SH  2'b01
 `define SW  2'b10
+
+//---------------- CSRs Addr -------yjk add-------------
+`define MTVEC	12'h305
+`define MSTATUS	12'h300
+`define MEPC	12'h341
+`define MTVAL	12'h343
+`define MCAUSE  12'h342
+`define SATP	12'h180
+`define SEPC	12'h141

@@ -29,10 +29,10 @@ module reg_id_ex(
     // yjk add
     input  wire[1:0]   id_csr_op,
     input  wire[1:0]   id_priv_ret,
-    input  wire[11:0]  id_csr,
+    input  wire[11:0]  id_csr_addr,
     output  wire[1:0]  ex_csr_op,
     output  wire[1:0]  ex_priv_ret,
-    output  wire[11:0] ex_csr,
+    output  wire[11:0] ex_csr_addr,
     // yjk add end
 
     output reg[31:0]  ex_pc,
@@ -77,7 +77,7 @@ always @(posedge clk or negedge rstn) begin
         // yjk add
         ex_csr_op       <= 0;
         ex_priv_ret     <= 0;
-        ex_csr          <= 0;
+        ex_csr_addr     <= 0;
         // yjk add end
     end 
     else begin
@@ -104,7 +104,7 @@ always @(posedge clk or negedge rstn) begin
         // yjk add
         ex_csr_op       <= id_csr_op;
         ex_priv_ret     <= id_priv_ret;
-        ex_csr          <= id_csr;
+        ex_csr_addr     <= id_csr_addr;
         // yjk add end
     end
     $display("ex_regs_data1: %h",ex_regs_data1 );

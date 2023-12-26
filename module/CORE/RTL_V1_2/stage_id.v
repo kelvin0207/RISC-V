@@ -28,7 +28,7 @@ module stage_id(
     // yjk add
     output  wire[1:0]   id_csr_op, // default=00, csrrw=01, csrrs=10
     output  wire[1:0]   id_priv_ret, // default-00, mret=01, sret=10
-    output  wire[11:0]  id_csr
+    output  wire[11:0]  id_csr_addr
     // yjk add end
 );
 
@@ -106,7 +106,7 @@ always @(*) begin
     else id_csr_op = 0;
 end
 
-assign id_csr = id_inst[31:20];
+assign id_csr_addr = id_inst[31:20];
 
 assign id_priv_ret = (id_inst==32'h3020_0073)? 2'b01 :
                     (id_inst==32'h1020_0073)? 2'b10 : 2'b00;

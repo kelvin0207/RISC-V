@@ -48,11 +48,14 @@ wire[4:0]     id_rs2;
 //yjk add 
 wire[1:0]     id_csr_op;
 wire[1:0]     id_priv_ret;
-wire[11:0]    id_csr;
+wire[11:0]    id_csr_addr;
 
 wire[1:0]     ex_csr_op;
 wire[1:0]     ex_priv_ret;
-wire[11:0]    ex_csr;
+wire[11:0]    ex_csr_addr;
+wire[31:0]    ret_pc;
+wire          ret_ctrl;
+wire[1:0]     ex_priv_mode;
 // yjk add end
 
 wire[4:0]     ex_rs1;
@@ -121,6 +124,8 @@ stage_if u_stage_if(
     .if_flush (flush    ),
     .br_addr  (br_addr  ),
     .br_ctrl  (br_ctrl  ),
+    .ret_ctrl (ret_ctrl ),
+    .ret_pc   (ret_pc   ),
     .if_inst  (if_inst  ),
     .if_pc    (if_pc    )
 );
@@ -166,7 +171,7 @@ stage_id u_stage_id(
     // yjk add 
     .id_csr_op            (id_csr_op           ),
     .id_priv_ret          (id_priv_ret         ),
-    .id_csr               (id_csr              )
+    .id_csr_addr          (id_csr_addr         )
     // yjk add end
 );
 
@@ -196,11 +201,11 @@ reg_id_ex u_reg_id_ex(
     // yjk add 
     .id_csr_op       (id_csr_op       ),
     .id_priv_ret     (id_priv_ret     ),
-    .id_csr          (id_csr          ),
+    .id_csr_addr     (id_csr_addr     ),
 
     .ex_csr_op       (ex_csr_op       ),
     .ex_priv_ret     (ex_priv_ret     ),
-    .ex_csr          (ex_csr          ),
+    .ex_csr_addr     (ex_csr_addr     ),
     // yjk add end
     .ex_rs1          (ex_rs1          ),
     .ex_rs2          (ex_rs2          ),
@@ -228,7 +233,10 @@ stage_ex u_stage_ex(
     // yjk add
     .ex_csr_op       (ex_csr_op       ),
     .ex_priv_ret     (ex_priv_ret     ),
-    .ex_csr          (ex_csr          ),
+    .ex_csr_addr     (ex_csr_addr     ),
+    .ret_pc          (ret_pc          ),
+    .ret_ctrl        (ret_ctrl        ),
+    .ex_priv_mode    (ex_priv_mode    ),
     // yjk add end
     .ex_pc           (ex_pc           ),
     .ex_regs_data1   (ex_regs_data1   ),
@@ -353,9 +361,9 @@ hazard_detection u_hazard_detection(
     .id_rs2              (id_rs2              ),
     .ex_rd               (ex_rd               ),
     .br_ctrl             (br_ctrl             ),
+    .ret_ctrl            (ret_ctrl            ),
     .stall               (stall               ),
     .flush               (flush               )
 );
-
 
 endmodule

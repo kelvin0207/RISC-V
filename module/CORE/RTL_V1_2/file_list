@@ -20,3 +20,4 @@ pc.v
 reg_mem_wb.v
 stage_if.v
 syn_rst.v
+csr.v

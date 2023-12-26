@@ -32,7 +32,7 @@ CSRs 一般都是在EX阶段访问
    - 需要注意各个字段的意义：![mstatus](./pic/mstatus.png)
    - `MPP` (Machine Previous Privilege): Specifies the privilege mode to enter upon an exception return.
    - `MPIE` (Machine Previous Interrupt Enable): Indicates whether interrupts were enabled before an exception occurred.
-   - `MPIE` (Machine Previous Interrupt Enable): Indicates whether interrupts were enabled before an exception occurred.
+   - `MIE` (Machine Interrupt Enable): Indicates whether interrupts were enabled.
 
 3. **`mepc` (Machine Exception Program Counter):**
    - `mepc` 存储发生陷阱或中断时的程序计数器值。当发生陷阱时，当前程序计数器的值保存在 `mepc`.
@@ -43,12 +43,22 @@ CSRs 一般都是在EX阶段访问
    - 实现 `mtval` 涉及在发生某些异常时适当地更新它。需要为每种类型的异常确定要存储在 `mtval` 中的相关信息。
    - 地址为 0x343
 
-5. **`satp` (Supervisor Address Translation and Protection):**
+5. **`medeleg & mideleg` (Machine Trap Delegation Registers)**
+   - `medeleg` 控制 M 态的 `异常` 是否代理到 S 态，1 表示代理；
+   - `medeleg` 控制 M 态的 `中断` 是否代理到 S 态，1 表示代理；
+   - 对于 `异常` 一般默认不代理，在本项目实现中默认不代理，所以不实现这两个 CSRs；
+
+6. **`mcause` (Machine Cause Register)**
+   - 当发生异常进入 M 态时，`mcause` 被写入一个代码，该代码指示了导致异常的事件。
+   - `mcause` 从来不是由自动写入的，它是由软件显式写入的。
+   - 地址为 0x342 ![mcause](./pic/macause.png)
+
+7. **`satp` (Supervisor Address Translation and Protection):**
    - `satp` 对于在 S 模式下管理虚拟内存至关重要。它保存根物理页表地址。
    - 要将 `satp` 集成到MMU(内存管理单元)逻辑中。当进入 S 模式或在 S 模式下处理页面错误时，相应地更新 `satp` 。
    - 地址为 0x180
 
-6. **`sepc` (Supervisor Exception Program Counter):**
+8. **`sepc` (Supervisor Exception Program Counter):**
    - 与 `mepc` 类似，`sepc`存储异常时的程序计数器值，但处于 S 模式。
    - 地址为 0x141
 
