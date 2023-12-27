@@ -25,6 +25,7 @@ module stage_ex(
     output wire[31:0]  ret_pc,
     output wire        ret_ctrl,
     output wire[1:0]   ex_priv_mode,
+    output wire[31:0]  ex_satp,
     // yjk add end
     output wire[31:0]  ex_alu_o,
     output wire[31:0]  ex_regs_data2_o,//the data for S-inst 
@@ -48,7 +49,7 @@ wire[31:0]    ex_mstatus;
 wire[31:0]    ex_mepc;
 wire[31:0]    ex_mtval;
 wire[31:0]    ex_mcause;
-wire[31:0]    ex_satp;
+// wire[31:0]    ex_satp;
 wire[31:0]    ex_sepc;
 
 wire          csr_w_en;

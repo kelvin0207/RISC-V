@@ -14,6 +14,11 @@ module reg_ex_mem(
     input wire[4:0]   ex_rs2,
     output reg[4:0]   me_rs2,
 
+    // yjk add
+    input wire [1:0]  ex_priv_mode,
+    output reg [1:0]  me_priv_mode,
+    // yjk add end 
+
     output reg[31:0]  me_regs_data2,
     output reg[31:0]  me_alu_o,
     output reg[4:0]   me_rd,
@@ -35,6 +40,7 @@ always @(posedge clk or negedge rstn) begin
         me_regs_write  <= 0;  
         me_rs2         <= 0;   
         me_func3_code  <= 0;    
+        me_priv_mode   <= 0; // yjk add
     end 
     else begin  
         me_regs_data2  <= ex_regs_data2;         
@@ -46,6 +52,7 @@ always @(posedge clk or negedge rstn) begin
         me_regs_write  <= ex_regs_write;
         me_rs2         <= ex_rs2;    
         me_func3_code  <= ex_func3_code; 
+        me_priv_mode   <= ex_priv_mode; // yjk add
     end
 
     $display("me_alu_o: %h",me_alu_o);

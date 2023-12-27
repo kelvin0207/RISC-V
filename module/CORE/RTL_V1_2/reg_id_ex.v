@@ -30,9 +30,9 @@ module reg_id_ex(
     input  wire[1:0]   id_csr_op,
     input  wire[1:0]   id_priv_ret,
     input  wire[11:0]  id_csr_addr,
-    output  wire[1:0]  ex_csr_op,
-    output  wire[1:0]  ex_priv_ret,
-    output  wire[11:0] ex_csr_addr,
+    output  reg[1:0]  ex_csr_op,
+    output  reg[1:0]  ex_priv_ret,
+    output  reg[11:0] ex_csr_addr,
     // yjk add end
 
     output reg[31:0]  ex_pc,

@@ -56,6 +56,7 @@ wire[11:0]    ex_csr_addr;
 wire[31:0]    ret_pc;
 wire          ret_ctrl;
 wire[1:0]     ex_priv_mode;
+wire[1:0]     me_priv_mode;
 // yjk add end
 
 wire[4:0]     ex_rs1;
@@ -262,6 +263,10 @@ stage_ex u_stage_ex(
 reg_ex_mem u_reg_ex_mem(
     .clk           (clk             ),
     .rstn          (rstn            ),
+    // yjk add
+    .ex_priv_mode  (ex_priv_mode    ),
+    .me_priv_mode  (me_priv_mode    ),
+    // yjk add end
     .ex_regs_data2 (ex_regs_data2_o ),
     .ex_alu_o      (ex_alu_o        ),
     .ex_rd         (ex_rd           ),
@@ -301,6 +306,7 @@ reg_ex_mem u_reg_ex_mem(
     stage_mem u_stage_mem(
         .clk           (clk           ),
         .rstn          (rstn          ),
+        .me_priv_mode  (me_priv_mode  ), // yjk add
         .me_regs_data2 (me_regs_data2 ),
         .me_alu_o      (me_alu_o      ),
         .me_mem_read   (me_mem_read   ),

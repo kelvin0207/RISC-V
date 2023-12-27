@@ -1,5 +1,5 @@
 `include "define.v"
-module stage_mem(
+module stage_mem_bak(
     input  wire        clk,
     input  wire        rstn,
     input  wire[31:0]  me_regs_data2,
@@ -10,9 +10,6 @@ module stage_mem(
     //forwarding
     input wire         forward_data,
     input wire[31:0]   w_regs_data,
-
-    input wire[1:0]    me_priv_mode, // yjk add
-    input wire[31:0]   me_satp, // yjk add
 
 `ifdef FPGA_MODE
     output reg[2:0]    me_led,
@@ -29,48 +26,21 @@ wire[31:0]  addr_mem;
 wire[ 1:0]  addr_in_word;
 wire        en_mem;
 
-// yjk add
-wire [31:0] addr_mem_pa;
-wire [31:0] addr_mem
-// yjk add end
 
-// yjk del
-// data_memory 
-// #(
-//     .RAM_SPACE (4096       )
-// )
-// u_data_memory(
-//     .clk        (clk               ),
-//     //.rstn       (rstn              ),
-//     .addr_mem   (addr_mem          ),
-//     .w_data_mem (w_data_mem        ),
-// //    .r_en_mem   (r_en_mem          ),
-//     .w_en_mem   (w_en_mem          ),
-//     .en_mem     (en_mem            ),
-//     .r_data_mem (r_data_mem        )
-// );
-// yjk del end
-
-// yjk add, replace data_memory
-dmem 
-    #(
-        .DATA_WHITH  (32    ),
-        .DATA_SIZE   (8     ),
-        .ADDR_WHITH  (10    ),
-        .RAM_DEPTH   (1024  )
-    )
-    u_dmem(
-    .clk     (clk       ),
-    .en      (en_mem    ),
-    .wen     (w_en_mem  ),
-    .addr1   (addr_mem  ),
-	.addr2   (),
-    .wdata   (w_data_mem),
-    .rdata1  (r_data_mem),
-    .rdata2  ()
+data_memory 
+#(
+    .RAM_SPACE (4096       )
+)
+u_data_memory(
+    .clk        (clk               ),
+    //.rstn       (rstn              ),
+    .addr_mem   (addr_mem          ),
+    .w_data_mem (w_data_mem        ),
+//    .r_en_mem   (r_en_mem          ),
+    .w_en_mem   (w_en_mem          ),
+    .en_mem     (en_mem            ),
+    .r_data_mem (r_data_mem        )
 );
-
-// yjk add end
 
 assign w_data_mem_pre = forward_data ? w_regs_data : me_regs_data2; //forwarding for load+store which have data correlation
 assign addr_mem       = me_alu_o;
