@@ -29,11 +29,6 @@ wire[31:0]  addr_mem;
 wire[ 1:0]  addr_in_word;
 wire        en_mem;
 
-// yjk add
-wire [31:0] addr_mem_pa;
-wire [31:0] addr_mem
-// yjk add end
-
 // yjk del
 // data_memory 
 // #(
@@ -52,6 +47,24 @@ wire [31:0] addr_mem
 // yjk del end
 
 // yjk add, replace data_memory
+// orginally use 
+// Read: addr_mem, en_mem, r_data_mem
+// Write: addr_mem, w_en_mem, w_data_mem
+// we need to replace *addr_mem* to *addr_mem_pa* only
+
+wire [31:0] addr_mem_pa;
+wire [31:0] pte1_addr;
+wire [31:0] pte2_addr;
+wire [31:0] paddr;
+wire [31:0] pte1;
+wire [31:0] pte2;
+
+assign pte1_addr = {me_satp[21:0], addr_mem[31:22], 2'b0};
+assign pte2_addr = {pte1[31:10], addr_mem[21:12], 2'b0};
+assign paddr = {pte2[31:12], addr_mem[11:0]};
+
+assign addr_mem_pa = (me_priv_mode==2'b11)? addr_mem : paddr;
+
 dmem 
     #(
         .DATA_WHITH  (32    ),
@@ -63,11 +76,13 @@ dmem
     .clk     (clk       ),
     .en      (en_mem    ),
     .wen     (w_en_mem  ),
-    .addr1   (addr_mem  ),
-	.addr2   (),
+    .addr1   (pte1_addr),
+	.addr2   (pte2_addr),
+	.addr3   (addr_mem_pa),
     .wdata   (w_data_mem),
-    .rdata1  (r_data_mem),
-    .rdata2  ()
+    .rdata1  (pte1),
+    .rdata2  (pte2),
+    .rdata3  (r_data_mem )
 );
 
 // yjk add end

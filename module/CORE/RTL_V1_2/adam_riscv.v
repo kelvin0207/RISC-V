@@ -56,7 +56,10 @@ wire[11:0]    ex_csr_addr;
 wire[31:0]    ret_pc;
 wire          ret_ctrl;
 wire[1:0]     ex_priv_mode;
+wire[31:0]    ex_satp;
+
 wire[1:0]     me_priv_mode;
+wire[31:0]    me_satp;
 // yjk add end
 
 wire[4:0]     ex_rs1;
@@ -238,6 +241,7 @@ stage_ex u_stage_ex(
     .ret_pc          (ret_pc          ),
     .ret_ctrl        (ret_ctrl        ),
     .ex_priv_mode    (ex_priv_mode    ),
+    .ex_satp         (ex_satp)
     // yjk add end
     .ex_pc           (ex_pc           ),
     .ex_regs_data1   (ex_regs_data1   ),
@@ -266,6 +270,8 @@ reg_ex_mem u_reg_ex_mem(
     // yjk add
     .ex_priv_mode  (ex_priv_mode    ),
     .me_priv_mode  (me_priv_mode    ),
+    .ex_satp       (ex_satp         ),
+    .me_satp       (me_satp         ),
     // yjk add end
     .ex_regs_data2 (ex_regs_data2_o ),
     .ex_alu_o      (ex_alu_o        ),
@@ -307,6 +313,7 @@ reg_ex_mem u_reg_ex_mem(
         .clk           (clk           ),
         .rstn          (rstn          ),
         .me_priv_mode  (me_priv_mode  ), // yjk add
+        .me_satp       (me_satp       ), // yjk add
         .me_regs_data2 (me_regs_data2 ),
         .me_alu_o      (me_alu_o      ),
         .me_mem_read   (me_mem_read   ),
