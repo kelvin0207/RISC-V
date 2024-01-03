@@ -22,11 +22,11 @@
 
 module ram_bfm
     #(
-        parameter   DATA_WHITH  = 32    ,
+        parameter   DATA_WIDTH  = 32    ,
         parameter   DATA_SIZE   = 8     ,
-        parameter   ADDR_WHITH  = 10    ,
+        parameter   ADDR_WIDTH  = 10    ,
         parameter   RAM_DEPTH   = 1024  ,
-        parameter   DATA_BYTE = DATA_WHITH/DATA_SIZE
+        parameter   DATA_BYTE = DATA_WIDTH/DATA_SIZE
     )
     (
     //system signals
@@ -34,14 +34,14 @@ module ram_bfm
     //RAM Control signals
     input                               cs      ,
     input           [DATA_BYTE-1:0]     we      ,
-    input           [ADDR_WHITH-1:0]    addr    ,
-    input           [DATA_WHITH-1:0]    wdata   ,
-    output  reg     [DATA_WHITH-1:0]    rdata   
+    input           [ADDR_WIDTH-1:0]    addr    ,
+    input           [DATA_WIDTH-1:0]    wdata   ,
+    output  reg     [DATA_WIDTH-1:0]    rdata   
 
 );
 
 
-(*ram_style = "block"*)  reg [DATA_WHITH-1:0] mem    [0:RAM_DEPTH-1] ;
+(*ram_style = "block"*)  reg [DATA_WIDTH-1:0] mem    [0:RAM_DEPTH-1] ;
 
 
 //=================================================================================

@@ -50,9 +50,9 @@ SRAM_4096_32 u_ram_data(
 `else //REG_ARRAY
 
 ram_bfm #(
-        .DATA_WHITH     ( 32            ),
+        .DATA_WIDTH     ( 32            ),
         .DATA_SIZE      ( 8             ),
-        .ADDR_WHITH     ( ADDR_WIDTH    ),
+        .ADDR_WIDTH     ( ADDR_WIDTH    ),
         .RAM_DEPTH      ( IROM_SPACE    )
     )
     u_ram_data(

@@ -1,6 +1,8 @@
 `include "define.v"
 
 module stage_ex(
+    input  wire        clk, // yjk add
+    input  wire        rstn, // yjk add
     input  wire[31:0]  ex_pc,  //pc_now
     input  wire[31:0]  ex_regs_data1,
     input  wire[31:0]  ex_regs_data2,
@@ -56,8 +58,8 @@ wire          csr_w_en;
 wire[31:0]    csr_w_data;
 wire[11:0]    csr_w_addr;
 
-wire[31:0]    csr_r_data;
-wire[31:0]    ex_alu_o; // add for csrrs
+reg[31:0]    csr_r_data;
+// wire[31:0]    ex_alu_o; // add for csrrs
 
 wire[31:0]    ex_alu_o2;
 // yjk add end
@@ -124,7 +126,7 @@ assign ret_ctrl = |ex_priv_ret;
 // priv_mode change
 always@(posedge clk or negedge rstn) begin
     if(!rstn) begin
-        priv_mode <= 0;
+        priv_mode <= 2'b11;
     end
     else begin
         // mret

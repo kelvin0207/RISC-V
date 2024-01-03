@@ -26,7 +26,7 @@ module stage_id(
     output  wire[4:0]  id_rs1,
     output  wire[4:0]  id_rs2,
     // yjk add
-    output  wire[1:0]   id_csr_op, // default=00, csrrw=01, csrrs=10
+    output  reg [1:0]   id_csr_op, // default=00, csrrw=01, csrrs=10
     output  wire[1:0]   id_priv_ret, // default-00, mret=01, sret=10
     output  wire[11:0]  id_csr_addr
     // yjk add end
@@ -95,14 +95,14 @@ assign id_regs_write   = (ctrl_valve == 1) ? 0 : regs_write     ;
 
 // yjk add
 always @(*) begin
-    if(id_inst[6:0]==`System){
+    if(id_inst[6:0]==`System)begin
         if(id_inst[14:12]==3'b001)
             id_csr_op = 2'b01;
         else if (id_inst[14:12]==3'b010)
             id_csr_op = 2'b10;
         else 
             id_csr_op = 0;
-    }
+    end
     else id_csr_op = 0;
 end
 

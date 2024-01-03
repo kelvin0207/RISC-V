@@ -235,13 +235,15 @@ reg_id_ex u_reg_id_ex(
 
 stage_ex u_stage_ex(
     // yjk add
+    .clk             (clk             ),
+    .rstn            (rstn            ),
     .ex_csr_op       (ex_csr_op       ),
     .ex_priv_ret     (ex_priv_ret     ),
     .ex_csr_addr     (ex_csr_addr     ),
     .ret_pc          (ret_pc          ),
     .ret_ctrl        (ret_ctrl        ),
     .ex_priv_mode    (ex_priv_mode    ),
-    .ex_satp         (ex_satp)
+    .ex_satp         (ex_satp         ),
     // yjk add end
     .ex_pc           (ex_pc           ),
     .ex_regs_data1   (ex_regs_data1   ),

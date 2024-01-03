@@ -17,7 +17,7 @@ module reg_mem_wb(
 
 always @(posedge clk or negedge rstn) begin
     if (!rstn)begin
-//        wb_mem_data    <= 0;     
+        wb_mem_data    <= 0; // yjk add
         wb_alu_o       <= 0;     
         wb_rd          <= 0; 
         wb_mem2reg     <= 0;     
@@ -25,7 +25,7 @@ always @(posedge clk or negedge rstn) begin
         wb_func3_code  <= 0;            
     end 
     else begin
-//        wb_mem_data    <= me_mem_data;     
+        wb_mem_data    <= me_mem_data; // yjk add
         wb_alu_o       <= me_alu_o;     
         wb_rd          <= me_rd; 
         wb_mem2reg     <= me_mem2reg;     
@@ -38,9 +38,10 @@ always @(posedge clk or negedge rstn) begin
     $display("-----------------------");
 end
 
-always @(*) begin
-    wb_mem_data = me_mem_data; //offset the 1-cycle delay caused by syn_RAM
-    $display("wb_mem_data  : %h",wb_mem_data);
-end
+// yjk del
+// always @(*) begin
+//     wb_mem_data = me_mem_data; //offset the 1-cycle delay caused by syn_RAM
+//     $display("wb_mem_data  : %h",wb_mem_data);
+// end
 
 endmodule

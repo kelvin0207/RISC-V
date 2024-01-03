@@ -67,9 +67,9 @@ assign addr_mem_pa = (me_priv_mode==2'b11)? addr_mem : paddr;
 
 dmem 
     #(
-        .DATA_WHITH  (32    ),
+        .DATA_WIDTH  (32    ),
         .DATA_SIZE   (8     ),
-        .ADDR_WHITH  (10    ),
+        .ADDR_WIDTH  (10    ),
         .RAM_DEPTH   (1024  )
     )
     u_dmem(
