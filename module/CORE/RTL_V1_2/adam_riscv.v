@@ -60,6 +60,8 @@ wire[31:0]    ex_satp;
 
 wire[1:0]     me_priv_mode;
 wire[31:0]    me_satp;
+
+wire          page_fault;
 // yjk add end
 
 wire[4:0]     ex_rs1;
@@ -125,7 +127,7 @@ stage_if u_stage_if(
     .clk      (clk      ),
     .rstn     (rstn     ),
     .pc_stall (stall    ),
-    .if_flush (flush    ),
+    .if_flush (flush | page_fault), // yjk add
     .br_addr  (br_addr  ),
     .br_ctrl  (br_ctrl  ),
     .ret_ctrl (ret_ctrl ),
@@ -142,7 +144,7 @@ reg_if_id u_reg_if_id(
     .if_inst     (if_inst     ),
     .id_inst     (id_inst     ),
     .id_pc       (id_pc       ),
-    .if_id_flush (flush       ),
+    .if_id_flush (flush | page_fault), // yjk add
     .if_id_stall (stall       )
 );
 
@@ -199,7 +201,7 @@ reg_id_ex u_reg_id_ex(
     .id_alu_src2     (id_alu_src2     ),
     .id_br_addr_mode (id_br_addr_mode ),
     .id_regs_write   (id_regs_write   ),
-    .id_ex_flush     (flush           ),
+    .id_ex_flush     (flush | page_fault), // yjk add
     .id_rs1          (id_rs1          ),
     .id_rs2          (id_rs2          ),
     // yjk add 
@@ -244,6 +246,7 @@ stage_ex u_stage_ex(
     .ret_ctrl        (ret_ctrl        ),
     .ex_priv_mode    (ex_priv_mode    ),
     .ex_satp         (ex_satp         ),
+    .page_fault      (page_fault      ),
     // yjk add end
     .ex_pc           (ex_pc           ),
     .ex_regs_data1   (ex_regs_data1   ),
@@ -274,6 +277,7 @@ reg_ex_mem u_reg_ex_mem(
     .me_priv_mode  (me_priv_mode    ),
     .ex_satp       (ex_satp         ),
     .me_satp       (me_satp         ),
+    .flush         (page_fault      ),
     // yjk add end
     .ex_regs_data2 (ex_regs_data2_o ),
     .ex_alu_o      (ex_alu_o        ),
@@ -316,6 +320,7 @@ reg_ex_mem u_reg_ex_mem(
         .rstn          (rstn          ),
         .me_priv_mode  (me_priv_mode  ), // yjk add
         .me_satp       (me_satp       ), // yjk add
+        .page_fault    (page_fault    ), // yjk add
         .me_regs_data2 (me_regs_data2 ),
         .me_alu_o      (me_alu_o      ),
         .me_mem_read   (me_mem_read   ),

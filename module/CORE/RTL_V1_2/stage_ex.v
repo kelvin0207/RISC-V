@@ -24,6 +24,7 @@ module stage_ex(
     input  wire[1:0]   ex_csr_op, // default=00, csrrw=01, csrrs=10
     input  wire[1:0]   ex_priv_ret, // default=00, mret=01, sret=10
     input  wire[11:0]  ex_csr_addr,
+    input  wire        page_fault,
     output wire[31:0]  ret_pc,
     output wire        ret_ctrl,
     output wire[1:0]   ex_priv_mode,
@@ -98,8 +99,8 @@ end
 
 // yjk add
 // support csrrw
-assign csr_w_en = (ex_csr_op==2'b01)? 1'b1 : 1'b0;
-assign csr_w_data = ex_regs_data1;
+assign csr_w_en = (ex_csr_op==2'b01 || page_fault)? 1'b1 : 1'b0;
+assign csr_w_data = (page_fault)? (ex_pc-4) : op_A_pre;
 assign csr_w_addr = ex_csr_addr;
 
 // support csrrs
@@ -119,9 +120,10 @@ assign ex_alu_o = (ex_csr_op==2'b10)? csr_r_data : ex_alu_o2;
 
 // support mret & sret
 assign ret_pc = (ex_priv_ret==2'b01)? ex_mepc:
-                    (ex_priv_ret==2'b10)? ex_sepc : 0;
+                    (ex_priv_ret==2'b10)? ex_sepc : 
+                    (page_fault)? ex_mtvec : 0;
 
-assign ret_ctrl = |ex_priv_ret;
+assign ret_ctrl = (|ex_priv_ret) | page_fault;
 
 // priv_mode change
 always@(posedge clk or negedge rstn) begin
@@ -131,11 +133,15 @@ always@(posedge clk or negedge rstn) begin
     else begin
         // mret
         if(ex_priv_ret==2'b01) begin
-            priv_mode = ex_mstatus[12:11];
+            priv_mode <= ex_mstatus[12:11];
         end
         // sret
         else if(ex_priv_ret==2'b10) begin
-            priv_mode = {1'b0, ex_mstatus[8]};
+            priv_mode <= {1'b0, ex_mstatus[8]};
+        end
+        // page fault
+        else if(page_fault) begin
+            priv_mode <= 2'b11; // M
         end
     end
 end
@@ -146,6 +152,7 @@ csr u_csr(
 	.clk        (clk),
 	.rstn       (rstn),
 	.priv_mode  (priv_mode),
+    .page_fault (page_fault),
 	.w_en       (csr_w_en),
 	.w_data     (csr_w_data),
 	.w_addr     (csr_w_addr),

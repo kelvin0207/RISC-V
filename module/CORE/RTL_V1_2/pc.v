@@ -46,6 +46,11 @@ always @(posedge clk or negedge rstn) begin
         pc_next <= br_addr + 4;
         //$display("PC_next = BR_addr: %h", pc_next);
     end
+    // yjk add
+    else if(ret_ctrl) begin
+        pc_next <= ret_pc + 4;
+    end
+    // yjk add end
     else if (pc_stall) begin
         pc_next <= pc_next;
         $strobe("PC_next = stall: %h", pc_next);

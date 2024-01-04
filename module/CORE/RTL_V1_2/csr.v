@@ -6,6 +6,7 @@ module csr(
 	input	wire		clk,
 	input	wire		rstn,
 	input	wire[1:0]	priv_mode,
+	input   wire        page_fault,
 	input	wire		w_en,
 	input	wire[31:0]	w_data,
 	input	wire[11:0]	w_addr,
@@ -54,6 +55,10 @@ always @(posedge clk or negedge rstn) begin
 			`SATP:		satp	<= w_data;
 			`SEPC:		sepc	<= w_data;
 		endcase
+	end
+	else if(page_fault) begin
+		mepc    <= w_data;
+		mstatus[12:11] <= priv_mode;
 	end
 end
 

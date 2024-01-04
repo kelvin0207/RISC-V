@@ -1,3 +1,5 @@
+`include "define.v"
+
 module stage_id(
     input wire         clk,
     input wire         rstn,

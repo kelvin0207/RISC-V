@@ -13,6 +13,7 @@ module stage_mem(
 
     input wire[1:0]    me_priv_mode, // yjk add
     input wire[31:0]   me_satp, // yjk add
+    output wire        page_fault, // yjk add
 
 `ifdef FPGA_MODE
     output reg[2:0]    me_led,
@@ -61,9 +62,11 @@ wire [31:0] pte2;
 
 assign pte1_addr = {me_satp[21:0], addr_mem[31:22], 2'b0};
 assign pte2_addr = {pte1[31:10], addr_mem[21:12], 2'b0};
-assign paddr = {pte2[31:12], addr_mem[11:0]};
+assign paddr = {pte2[31:10], addr_mem[11:0]};
 
 assign addr_mem_pa = (me_priv_mode==2'b11)? addr_mem : paddr;
+
+assign page_fault = rstn && (me_priv_mode!=2'b11) && (en_mem | (|w_en_mem)) && ((pte1[0]==0) || (pte1[1]==0 && pte1[2]==1) || (pte2[0]==0) || (pte2[1]==0 && pte2[2]==1));
 
 dmem 
     #(
@@ -76,6 +79,7 @@ dmem
     .clk     (clk       ),
     .en      (en_mem    ),
     .wen     (w_en_mem  ),
+    .page_fault(page_fault),
     .addr1   (pte1_addr),
 	.addr2   (pte2_addr),
 	.addr3   (addr_mem_pa),

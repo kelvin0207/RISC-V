@@ -41,7 +41,7 @@ machine:
     sw      t1, 0(t0)      # store leaf_s_pte in (second_s_pt_addr)
     # load TUBE 2rd page-table
     li      t0, 0x80000004
-    li      t1, 0x04c000ff # [PPN,0x000] = 0x13000000(TUBE space - va[0x80001000])
+    li      t1, 0x04c00000 # [PPN,0x000] = 0x13000000(TUBE space - va[0x80001000]) 触发page fault
     sw      t1, 0(t0) 
  
     # enable virtual addressing
@@ -56,8 +56,8 @@ m_trap:
     # !    
     # process instruction page-fault
     instruction_page_fault:
-    li      t3, 0x80000000 # t3 = (second_u_pt_addr)  
-    li      t4, 0x200000ff # [PPN,0x000] = 0x80000000(user va/pa)
+    li      t3, 0x80000004 # t3 = (second_u_pt_addr)  
+    li      t4, 0x04c000ff # [PPN,0x000] = 0x80000000(user va/pa)
     sw      t4, 0(t3)      # store leaf_u_pte in (second_u_pt_addr) 
     mret
 

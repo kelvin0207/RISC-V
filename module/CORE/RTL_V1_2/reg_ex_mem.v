@@ -15,6 +15,7 @@ module reg_ex_mem(
     output reg[4:0]   me_rs2,
 
     // yjk add
+    input wire        flush,
     input wire [1:0]  ex_priv_mode,
     output reg [1:0]  me_priv_mode,
     input wire [31:0] ex_satp,
@@ -32,7 +33,7 @@ module reg_ex_mem(
 );
 
 always @(posedge clk or negedge rstn) begin
-    if (!rstn)begin
+    if (!rstn | flush)begin // yjk add
         me_regs_data2  <= 0;         
         me_alu_o       <= 0;     
         me_rd          <= 0; 
@@ -42,7 +43,7 @@ always @(posedge clk or negedge rstn) begin
         me_regs_write  <= 0;  
         me_rs2         <= 0;   
         me_func3_code  <= 0;    
-        me_priv_mode   <= 0; // yjk add
+        me_priv_mode   <= 2'b11; // yjk add
         me_satp        <= 0; // yjk add
     end 
     else begin  

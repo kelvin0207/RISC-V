@@ -7,7 +7,7 @@ Disassembly of section .text:
 80000000 <_start>:
 80000000:	18001073          	csrw	satp,zero
 80000004:	00000297          	auipc	t0,0x0
-80000008:	06828293          	addi	t0,t0,104 # 8000006c <instruction_page_fault>
+80000008:	06428293          	addi	t0,t0,104 # 80000068 <instruction_page_fault>
 8000000c:	30529073          	csrw	mtvec,t0
 80000010:	000012b7          	lui	t0,0x1
 80000014:	80028293          	addi	t0,t0,-2048 # 800 <_start-0x7ffff800>
@@ -27,16 +27,16 @@ Disassembly of section .text:
 8000004c:	800002b7          	lui	t0,0x80000
 80000050:	00428293          	addi	t0,t0,4 # 80000004 <_end+0xfffff004>
 80000054:	04c00337          	lui	t1,0x4c00
-80000058:	0ff30313          	addi	t1,t1,255 # 4c000ff <_start-0x7b3fff01>
-8000005c:	0062a023          	sw	t1,0(t0)
-80000060:	800802b7          	lui	t0,0x80080
-80000064:	18029073          	csrw	satp,t0
-80000068:	30200073          	mret
+80000058:	0062a023          	sw	t1,0(t0)
+8000005c:	800802b7          	lui	t0,0x80080
+80000060:	18029073          	csrw	satp,t0
+80000064:	30200073          	mret
 
-8000006c <instruction_page_fault>:
-8000006c:	80000e37          	lui	t3,0x80000
-80000070:	20000eb7          	lui	t4,0x20000
-80000074:	0ffe8e93          	addi	t4,t4,255 # 200000ff <_start-0x5fffff01>
+80000068 <instruction_page_fault>:	
+80000068:   80000e37          	lui	t3,0x80000
+8000006c:	004e0e13          	addi	t3,t3,4 
+80000070:	04c00eb7          	lui	t4,0x4c00
+80000074:	0ffe8e93          	addi	t4,t4,255 # 0x04c000ff <_start-0x5fffff01>
 80000078:	01de2023          	sw	t4,0(t3) # 80000000 <_end+0xfffff000>
 8000007c:	30200073          	mret
 
